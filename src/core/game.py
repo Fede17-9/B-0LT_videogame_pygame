@@ -5,6 +5,7 @@ Gestiona el bucle principal, la carga de niveles, colisiones y estados del juego
 
 import os
 import pygame
+import sys
 from src.utils.constants import (
     SCREEN_WIDTH, SCREEN_HEIGHT, FPS, GAME_TITLE
 )
@@ -19,6 +20,10 @@ from src.entities.item import Bateria
 from src.entities.puerta import Puerta
 from src.entities.enemy import Enemy
 from src.entities.FlyingEnemy import FlyingEnemy
+
+# Definir la ruta base del proyecto (1 nivel arriba de src/core/)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__))))
 
 
 class Game:
@@ -93,9 +98,10 @@ class Game:
         Returns:
             int: El mejor tiempo guardado o 9999 si no existe.
         """
+        ruta_record = os.path.join(BASE_DIR, "highscore.txt")
         try:
-            if os.path.exists("highscore.txt"):
-                with open("highscore.txt", "r") as f:
+            if os.path.exists(ruta_record):
+                with open(ruta_record, "r") as f:
                     contenido = f.read().strip()
                     return (int(contenido) if contenido and
                             int(contenido) > 0 else 9999)
@@ -110,8 +116,9 @@ class Game:
         Args:
             nuevo_record (int): El nuevo tiempo a guardar.
         """
+        ruta_record = os.path.join(BASE_DIR, "highscore.txt")
         try:
-            with open("highscore.txt", "w") as f:
+            with open(ruta_record, "w") as f:
                 f.write(str(nuevo_record))
         except IOError as e:
             print(f"Error al guardar highscore: {e}")
@@ -130,19 +137,19 @@ class Game:
 
     def _cargar_assets_gameover(self):
         """Carga los frames de la animación de Game Over."""
-        path = os.path.join("assets", "images")
+        path = os.path.join(BASE_DIR, "assets", "images")
         for i in range(1, 6):
             try:
-                img = pygame.image.load(
-                    os.path.join(path, f"gameover{i}.jpg")).convert_alpha()
+                img_path = os.path.join(path, f"gameover{i}.jpg")
+                img = pygame.image.load(img_path).convert_alpha()
                 img = pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
                 self.game_over_frames.append(img)
-            except pygame.error:
+            except (pygame.error, FileNotFoundError):
                 pass
 
     def _cargar_assets_final(self):
         """Carga los frames de la animación final."""
-        path = os.path.join("assets", "images", "final")
+        path = os.path.join(BASE_DIR, "assets", "images", "final")
         for i in range(1, 31):
             try:
                 img_path = os.path.join(path, f"final{i}.jpg")
@@ -151,19 +158,19 @@ class Game:
                     img = pygame.transform.scale(
                         img, (SCREEN_WIDTH, SCREEN_HEIGHT))
                     self.final_frames.append(img)
-            except pygame.error as e:
+            except (pygame.error, FileNotFoundError) as e:
                 print(f"Error cargando fotograma final {i}: {e}")
 
     def _cargar_assets_creditos(self):
         """Carga los fondos para la pantalla de créditos."""
-        path = os.path.join("assets", "images", "final")
+        path = os.path.join(BASE_DIR, "assets", "images", "final")
         for i in range(1, 4):
             try:
-                img = pygame.image.load(
-                    os.path.join(path, f"creditos{i}.jpg")).convert()
+                img_path = os.path.join(path, f"creditos{i}.jpg")
+                img = pygame.image.load(img_path).convert()
                 img = pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
                 self.credits_frames.append(img)
-            except pygame.error:
+            except (pygame.error, FileNotFoundError):
                 pass
 
     def _configurar_objetos_nivel_1(self):
@@ -270,7 +277,7 @@ class Game:
         self.score_total = (pygame.time.get_ticks() - self.start_ticks) // 1000
         self.state = "ENDING"
         pygame.mixer.music.stop()
-        ruta_musica_final = os.path.join("assets", "sounds", "final.mp3")
+        ruta_musica_final = os.path.join(BASE_DIR, "assets", "sounds", "final.mp3")
         if os.path.exists(ruta_musica_final):
             pygame.mixer.music.load(ruta_musica_final)
             pygame.mixer.music.play(0)
@@ -356,7 +363,7 @@ class Game:
                     self.state = "GAME_OVER"
                     pygame.mixer.music.stop()
                     ruta_musica_go = os.path.join(
-                        "assets", "sounds", "8BitJam.mp3")
+                        BASE_DIR, "assets", "sounds", "8BitJam.mp3")
                     if os.path.exists(ruta_musica_go):
                         pygame.mixer.music.load(ruta_musica_go)
                         pygame.mixer.music.play(-1)
