@@ -1,4 +1,7 @@
-import pygame
+"""
+Módulo de constantes globales para el videojuego B-0LT.
+Contiene configuraciones de pantalla, colores y otros valores estáticos.
+"""
 
 # Dimensiones de la pantalla
 SCREEN_WIDTH = 1280
@@ -8,8 +11,9 @@ FPS = 60
 # Colores (Aesthetics)
 COLOR_BG = (20, 20, 30)       # Azul oscuro profundo
 COLOR_PRIMARY = (0, 255, 200)  # Cian neón
-COLOR_SECONDARY = (255, 0, 150) # Magenta neón
+COLOR_SECONDARY = (255, 0, 150)  # Magenta neón
 COLOR_WHITE = (255, 255, 255)
 
 # Título del juego
 GAME_TITLE = "B-0LT Videogame"
+
